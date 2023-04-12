@@ -20,11 +20,13 @@
         <div class="flex h-full w-full">
             <!--Left column for document-->
             <div class="w-2/3 h-full bg-blue-500 flex flex-col justify-center items-center">
+                <!--Text area for inputting document-->
                 <div class="h-2/3 w-10/12 mx-auto my-5 bg-white">
-
+                    <textarea class="w-full h-full rounded-lg outline-none border-2 border-teal-500 resize-none" placeholder="Paste your document here"></textarea>
                 </div>
+                <!--Text area for getting feedback from LLM-->
                 <div class="h-1/3 w-10/12 mx-auto my-5 bg-white">
-                    
+                    <textarea class="w-full h-full bg-transparent pointer-events-none rounded-lg outline-none border-2 border-orange-300 resize-none" placeholder="Tap a button in the right panel for feedback" disabled></textarea>
                 </div>
             </div>
 
@@ -57,6 +59,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500">
+            <h2 class="text-sm font-regular text-center text-gray-200">Made with ❤️ & ☕ by <a href="https://www.linkedin.com/in/guodongzhao/" style="text-decoration: underline;">Troy Zhao</a>. <a href="https://github.com/Troyanovsky/pm_doc_interrogator" style="text-decoration: underline;">GitHub Repo</a></h2>
         </div>
     </div>
 

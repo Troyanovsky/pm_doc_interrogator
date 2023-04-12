@@ -20,7 +20,7 @@ Document -> Prompt/Scenario -> LLM -> Return
 
 The MVP version uses routed OpenAI API, and the future version plans to use self-hosted Vicuna/ChatGLM.
 
-The frontend will be built with HTML, Bulma CSS, Tailwind CSS, and Vue.
+The frontend will be built with HTML, Tailwind CSS, and Vue.
 
 The backend will be hosted on Netlify. For future version, I plan to allow users to self-host or use API directly.
 
@@ -41,5 +41,4 @@ Analyze
 
 Improve
 - Refine language
-- Suggestions for improvement
-- Future iterations/features
+- Ideate Future iterations/features
