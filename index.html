@@ -1,83 +1,208 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <title>PM Document Interrogator</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Load Tailwind CSS from CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" href="image/favicon.ico" type="image/x-icon">
-</head>
+    <link rel="icon" href="image/favicon.ico" type="image/x-icon" />
+    <!-- Load Vue3 from CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
 
-<body>
-    <div id="app" class="h-screen w-screen flex flex-col justify-center items-center">
-        <div class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500">
-            <h1 class="text-2xl font-bold text-center text-white">PM Document Interrogator</h1>
-            <h2 class="text-lg font-medium text-center text-gray-200">Improve your product documents with AI</h2>
+  <body>
+    <div
+      id="app"
+      class="h-screen w-screen flex flex-col justify-center items-center"
+    >
+      <!--Modal-->
+      <div class="fixed z-10 inset-0 overflow-y-auto" v-if="showPopup">
+        <div
+          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+        >
+          <!-- Background overlay -->
+          <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+          </div>
+
+          <div
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+          >
+            <form class="px-4 py-6">
+              <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="email">
+                  Email
+                </label>
+                <input
+                  class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  v-model="userEmail"
+                />
+              </div>
+              <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="api-key">
+                  OpenAI API Key (Optionall, Saved Locally)
+                </label>
+                <input
+                  class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id="api-key"
+                  type="password"
+                  placeholder="Enter your OpenAI API key"
+                  v-model="openAIKey"
+                />
+              </div>
+              <div class="mt-6">
+                <button
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  type="submit"
+                  v-on:click="showPopup=false"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!--Header-->
+      <div
+        class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500"
+      >
+        <h1 class="text-2xl font-bold text-center text-white">
+          PM Document Interrogator
+        </h1>
+        <h2 class="text-lg font-medium text-center text-gray-200">
+          Improve your product documents with AI
+        </h2>
+      </div>
+
+      <div class="flex h-full w-full">
+        <!--Left column for document-->
+        <div
+          class="w-2/3 h-full bg-blue-500 flex flex-col justify-center items-center"
+        >
+          <!--Text area for inputting document-->
+          <div class="h-2/3 w-10/12 mx-auto my-5 bg-white">
+            <textarea
+              class="w-full h-full rounded-lg outline-none border-2 border-teal-500 resize-none"
+              placeholder="Paste your document here"
+              v-model="userDoc"
+            ></textarea>
+          </div>
+          <!--Text area for getting feedback from LLM-->
+          <div class="h-1/3 w-10/12 mx-auto my-5 bg-white">
+            <textarea
+              class="w-full h-full bg-transparent pointer-events-none rounded-lg outline-none border-2 border-orange-300 resize-none"
+              placeholder="Tap a button in the right panel for feedback"
+              disabled
+            ></textarea>
+          </div>
         </div>
 
-        <div class="flex h-full w-full">
-            <!--Left column for document-->
-            <div class="w-2/3 h-full bg-blue-500 flex flex-col justify-center items-center">
-                <!--Text area for inputting document-->
-                <div class="h-2/3 w-10/12 mx-auto my-5 bg-white">
-                    <textarea class="w-full h-full rounded-lg outline-none border-2 border-teal-500 resize-none" placeholder="Paste your document here"></textarea>
-                </div>
-                <!--Text area for getting feedback from LLM-->
-                <div class="h-1/3 w-10/12 mx-auto my-5 bg-white">
-                    <textarea class="w-full h-full bg-transparent pointer-events-none rounded-lg outline-none border-2 border-orange-300 resize-none" placeholder="Tap a button in the right panel for feedback" disabled></textarea>
-                </div>
+        <!--Right column for buttons-->
+        <div
+          class="w-1/3 h-full bg-yellow-500 flex flex-col justify-start items-center"
+        >
+          <div class="w-full h-1/4 mx-auto my-5 bg-white">
+            <h2 class="font-medium text-center py-1">Inspire</h2>
+            <button
+              class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+            >
+              Similar Apps
+            </button>
+          </div>
+          <div class="w-full h-1/4 mx-auto my-5 bg-white">
+            <h2 class="font-medium text-center py-1">Generate</h2>
+            <div class="flex flex-wrap justify-start align-center">
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                User Stories
+              </button>
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                Success Criteria
+              </button>
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                PRFAQ
+              </button>
             </div>
-
-            <!--Right column for buttons-->
-            <div class="w-1/3 h-full bg-yellow-500 flex flex-col justify-start items-center">
-                <div class="w-full h-1/4 mx-auto my-5 bg-white">
-                    <h2 class="font-medium text-center py-1">Inspire</h2>
-                    <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Similar Apps</button>
-                </div>
-                <div class="w-full h-1/4 mx-auto my-5 bg-white">
-                    <h2 class="font-medium text-center py-1">Generate</h2>
-                    <div class="flex flex-wrap justify-start align-center">
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">User Stories</button>
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Success Criteria</button>
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">PRFAQ</button>
-                    </div>
-                </div>
-                <div class="w-full h-1/4 mx-auto my-5 bg-white">
-                    <h2 class="font-medium text-center py-1">Analyze</h2>
-                    <div class="flex flex-wrap justify-start align-center">
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Missing Components</button>
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Logical Flaw</button>
-                    </div>
-                </div>
-                <div class="w-full h-1/4 mx-auto my-5 bg-white">
-                    <h2 class="font-medium text-center py-1">Improve</h2>
-                    <div class="flex flex-wrap justify-start align-center">
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Language</button>
-                        <button class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent">Future Iterations</button>
-                    </div>
-                </div>
+          </div>
+          <div class="w-full h-1/4 mx-auto my-5 bg-white">
+            <h2 class="font-medium text-center py-1">Analyze</h2>
+            <div class="flex flex-wrap justify-start align-center">
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                Missing Components
+              </button>
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                Logical Flaw
+              </button>
             </div>
+          </div>
+          <div class="w-full h-1/4 mx-auto my-5 bg-white">
+            <h2 class="font-medium text-center py-1">Improve</h2>
+            <div class="flex flex-wrap justify-start align-center">
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                Language
+              </button>
+              <button
+                class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              >
+                Future Iterations
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500">
-            <h2 class="text-sm font-regular text-center text-gray-200">Made with ❤️ & ☕ by <a href="https://www.linkedin.com/in/guodongzhao/" style="text-decoration: underline;">Troy Zhao</a>. <a href="https://github.com/Troyanovsky/pm_doc_interrogator" style="text-decoration: underline;">GitHub Repo</a></h2>
-        </div>
+      <!--Footer-->
+      <div
+        class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500"
+      >
+        <h2 class="text-sm font-regular text-center text-gray-200">
+          Made with ❤️ & ☕ by
+          <a
+            href="https://www.linkedin.com/in/guodongzhao/"
+            style="text-decoration: underline"
+            >Troy Zhao</a
+          >.
+          <a
+            href="https://github.com/Troyanovsky/pm_doc_interrogator"
+            style="text-decoration: underline"
+            >GitHub Repo</a
+          >
+        </h2>
+      </div>
     </div>
 
-    <!-- Load Vue3 from CDN -->
-    <script type="module" src="https://unpkg.com/vue@3.2.20/dist/vue.esm-browser.js"></script>
-    <script type="module">
+    <!-- Vue -->
+    <script>
         const app = Vue.createApp({
-            data() {
-                return {
-                    message: "Hello Vue!",
-                };
-            },
-        });
-        app.mount("#app");
+        data() {
+          return {
+            userDoc: "",
+            feedback: "",
+            showPopup: true,
+            userEmail: "",
+            openAIKey: "",
+          };
+        },
+      });
+      
+      app.mount("#app");
     </script>
-</body>
-
+  </body>
 </html>
