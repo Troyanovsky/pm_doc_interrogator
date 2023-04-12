@@ -1,4 +1,4 @@
-# pm_doc_interrogator
+# PM Doc Interrogator
 A simple tool to help Product Managers check their documents & provide suggestions.
 
 ## Background
@@ -29,13 +29,16 @@ The interface has four main features: Inspiration, Generate, Analyze, and Improv
 
 Inspiration
 - Similar apps
+
 Generate
 - User stories generator
 - Success criteria generator
 - PRFAQ Generator
+
 Analyze
 - Missing components/sections
 - Logical flaws Interrogator/consistency
+
 Improve
 - Refine language
 - Suggestions for improvement
