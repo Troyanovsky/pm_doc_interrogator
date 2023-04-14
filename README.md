@@ -18,11 +18,9 @@ The technical pipeline is designed as follows:
 
 Document -> Prompt/Scenario -> LLM -> Return
 
-The MVP version uses routed OpenAI API, and the future version plans to use self-hosted Vicuna/ChatGLM.
-
 The frontend will be built with HTML, Tailwind CSS, and Vue.
 
-The backend will be hosted on Netlify. For future version, I plan to allow users to self-host or use API directly.
+The first version will not have a backend, users wil send requests directly to OpenAI's API with their own API key in the browser. For future versions, I plan to spin up a proxy server and allow those without an API key to use the tool. I also plan to implement a custom LLM that users can run on their own computer for privacy. (If you are interested in contributing to this project, please reach out to me!)
 
 ## Features
 The interface has four main features: Inspiration, Generate, Analyze, and Improve. The left side of the interface is an input text box, and the right side has buttons and a feedback box.
