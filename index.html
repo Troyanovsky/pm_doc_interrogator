@@ -30,6 +30,7 @@
             class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
           >
             <form class="px-4 py-6">
+              <!--
               <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="email">
                   Email
@@ -42,9 +43,10 @@
                   v-model="userEmail"
                 />
               </div>
+              -->
               <div class="mb-4">
                 <label class="block text-gray-700 font-bold mb-2" for="api-key">
-                  OpenAI API Key (Optionall, Saved Locally)
+                  OpenAI API Key (Saved Locally)
                 </label>
                 <input
                   class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -196,7 +198,7 @@
             userDoc: "",
             feedback: "",
             showPopup: true,
-            userEmail: "",
+            // userEmail: "",
             openAIKey: "",
           };
         },
