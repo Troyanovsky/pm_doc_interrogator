@@ -40,3 +40,10 @@ Analyze
 Improve
 - Refine language
 - Ideate Future iterations/features
+
+## TODO
+- Enable streaming for responses
+- Creat a proxy backend for users without API keys & users in locations blocked by OpenAI
+- Add more pre-set prompts
+- Allow customization of prompt buttons
+- Add a custom, locally-run LLM (if possible) like Alpaca, Koala, GPT4All, etc.
