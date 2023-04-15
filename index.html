@@ -71,25 +71,23 @@
 
       <!--Header-->
       <div
-        class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500"
+        class="flex justify-center items-center flex-col h-1/12 w-full border-b border-gray-300 shadow-md"
       >
-        <h1 class="text-2xl font-bold text-center text-white">
+        <h1 class="text-2xl font-bold text-center text-teal-500">
           PM Document Interrogator
         </h1>
-        <h2 class="text-lg font-medium text-center text-gray-200">
+        <h2 class="text-lg font-medium text-center text-gray-400">
           Improve your product documents with AI
         </h2>
       </div>
 
       <div class="flex h-full w-full">
         <!--Left column for document-->
-        <div
-          class="w-2/3 h-full bg-blue-500 flex flex-col justify-center items-center"
-        >
+        <div class="w-2/3 h-full flex flex-col justify-center items-center">
           <!--Text area for inputting document-->
           <div class="h-2/3 w-10/12 mx-auto my-5 bg-white">
             <textarea
-              class="w-full h-full rounded-lg outline-none border-2 border-teal-500 resize-none"
+              class="w-full h-full rounded-lg outline-none border-2 border-teal-500 resize-none py-2 px-2"
               placeholder="Paste your document here"
               v-model="userDoc"
             ></textarea>
@@ -97,7 +95,7 @@
           <!--Text area for getting feedback from LLM-->
           <div class="h-1/3 w-10/12 mx-auto my-5 bg-white">
             <textarea
-              class="w-full h-full bg-transparent rounded-lg outline-none border-2 border-orange-300 resize-none"
+              class="w-full h-full bg-transparent rounded-lg outline-none border-2 border-orange-300 resize-none py-2 px-2"
               placeholder="Tap a button in the right panel for feedback"
               v-model="feedback"
               readonly
@@ -106,11 +104,9 @@
         </div>
 
         <!--Right column for buttons-->
-        <div
-          class="w-1/3 h-full bg-yellow-500 flex flex-col justify-start items-center"
-        >
+        <div class="w-1/3 h-full flex flex-col justify-start items-center">
           <div class="w-full h-1/4 mx-auto my-5 bg-white">
-            <h2 class="font-medium text-center py-1">Inspire</h2>
+            <h2 class="font-semibold text-center py-1">Inspire</h2>
             <button
               class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
               @click="checkSimilarApps"
@@ -119,7 +115,7 @@
             </button>
           </div>
           <div class="w-full h-1/4 mx-auto my-5 bg-white">
-            <h2 class="font-medium text-center py-1">Generate</h2>
+            <h2 class="font-semibold text-center py-1">Generate</h2>
             <div class="flex flex-wrap justify-start align-center">
               <button
                 class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
@@ -142,30 +138,34 @@
             </div>
           </div>
           <div class="w-full h-1/4 mx-auto my-5 bg-white">
-            <h2 class="font-medium text-center py-1">Analyze</h2>
+            <h2 class="font-semibold text-center py-1">Analyze</h2>
             <div class="flex flex-wrap justify-start align-center">
               <button
                 class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+                @click="analyzeComponents"
               >
                 Missing Components
               </button>
               <button
                 class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+                @click="analyzeLogic"
               >
                 Logical Flaw
               </button>
             </div>
           </div>
           <div class="w-full h-1/4 mx-auto my-5 bg-white">
-            <h2 class="font-medium text-center py-1">Improve</h2>
+            <h2 class="font-semibold text-center py-1">Improve</h2>
             <div class="flex flex-wrap justify-start align-center">
               <button
                 class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+                @click="improveLanguage"
               >
                 Language
               </button>
               <button
                 class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+                @click="ideateIterations"
               >
                 Future Iterations
               </button>
@@ -176,9 +176,9 @@
 
       <!--Footer-->
       <div
-        class="flex justify-center items-center flex-col h-1/12 w-full bg-teal-500"
+        class="flex justify-center items-center flex-col h-1/12 w-full border-t border-gray-300"
       >
-        <h2 class="text-sm font-regular text-center text-gray-200">
+        <h2 class="text-sm font-regular text-center text-gray-400">
           Made with ❤️ & ☕ by
           <a
             href="https://www.linkedin.com/in/guodongzhao/"
@@ -194,6 +194,14 @@
       </div>
     </div>
 
+    <!-- Fallback to local copy if unpkg is unavailable -->
+    <script>
+      if (typeof Vue === "undefined") {
+        var script = document.createElement("script");
+        script.src = "src\vue.global.prod.js";
+        document.head.appendChild(script);
+      }
+    </script>
     <!-- Vue -->
     <script>
       const app = Vue.createApp({
@@ -222,20 +230,20 @@
             let OPENAI_API_KEY = this.openAIKey.trim();
             // An OpenAI API key should be exactly 51 characters long
             if (OPENAI_API_KEY.length !== 51) {
-              console.log("API key is not 51 characters long")
+              console.log("API key is not 51 characters long");
               return false;
             }
 
             // An OpenAI API key should start with "sk-"
             if (!OPENAI_API_KEY.startsWith("sk-")) {
-              console.log("API key does not start with sk-")
+              console.log("API key does not start with sk-");
               return false;
             }
 
             // An OpenAI API key should only contain numbers, letters, and dashes
             const hexRegex = /^[a-zA-Z0-9-]+$/;
             if (!hexRegex.test(OPENAI_API_KEY)) {
-              console.log("API key contains non-hexadecimal characters")
+              console.log("API key contains non-hexadecimal characters");
               return false;
             }
 
@@ -312,6 +320,82 @@
 
               // send request to OpenAI API
               this.sendRequest(PRFAQPrompt);
+            } else {
+              this.feedback =
+                "Invalid Document. Document must be between 100-2000 words.";
+            }
+          },
+
+          analyzeComponents() {
+            const doc = this.userDoc.trim();
+
+            console.log("Checking if document is valid...");
+            if (this.checkValidDoc()) {
+              // construct prompt
+              const componentsPrompt =
+                "Given the following product requirement document, analyze which components might be missing. A good product requirement document should contain: Product Description, Business Requirements, User Stories/Use Cases, Functional Requirements, Business Requirements, Technical Requirements, Performance Requirements, Security Requirements, Integration Requirements, Reporting and Analytics Requirements, Legal and Compliance Requirements, Project Scope and Boundaries, Assumptions, Constraints, Acceptance Criteria, Wireframes or Mockups (if applicable), Data Architecture, Project Timeline and Milestones. ---START OF DOCUMENT---" +
+                doc +
+                "---END OF DOCUMENT---";
+
+              // send request to OpenAI API
+              this.sendRequest(componentsPrompt);
+            } else {
+              this.feedback =
+                "Invalid Document. Document must be between 100-2000 words.";
+            }
+          },
+
+          analyzeLogic() {
+            const doc = this.userDoc.trim();
+
+            console.log("Checking if document is valid...");
+            if (this.checkValidDoc()) {
+              // construct prompt
+              const logicPrompt =
+                "Given the following product requirement document, analyze if the document is logical and if it contains any logical flawss like unstated assumptions. ---START OF DOCUMENT---" +
+                doc +
+                "---END OF DOCUMENT---";
+
+              // send request to OpenAI API
+              this.sendRequest(logicPrompt);
+            } else {
+              this.feedback =
+                "Invalid Document. Document must be between 100-2000 words.";
+            }
+          },
+
+          improveLanguage() {
+            const doc = this.userDoc.trim();
+
+            console.log("Checking if document is valid...");
+            if (this.checkValidDoc()) {
+              // construct prompt
+              const languagePrompt =
+                "Given the following product requirement document, check if the language is professionally appropriate. Check for grammar, spellings, discriminary language, unexplained jargons, informal language, biases, ambiguous language. Correct the language flaws and return the corrected version.---START OF DOCUMENT---" +
+                doc +
+                "---END OF DOCUMENT---";
+
+              // send request to OpenAI API
+              this.sendRequest(languagePrompt);
+            } else {
+              this.feedback =
+                "Invalid Document. Document must be between 100-2000 words.";
+            }
+          },
+
+          ideateIterations() {
+            const doc = this.userDoc.trim();
+
+            console.log("Checking if document is valid...");
+            if (this.checkValidDoc()) {
+              // construct prompt
+              const iterationPrompt =
+                "Given the following product requirement document, what could be some potential future iterations to improve the product. List the potential features in a list with a concise explanation. ---START OF DOCUMENT---" +
+                doc +
+                "---END OF DOCUMENT---";
+
+              // send request to OpenAI API
+              this.sendRequest(iterationPrompt);
             } else {
               this.feedback =
                 "Invalid Document. Document must be between 100-2000 words.";
