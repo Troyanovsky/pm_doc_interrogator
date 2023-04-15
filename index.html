@@ -59,7 +59,6 @@
               <div class="mt-6">
                 <button
                   class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  type="submit"
                   v-on:click="showPopup=false"
                 >
                   Submit
@@ -101,6 +100,8 @@
               class="w-full h-full bg-transparent pointer-events-none rounded-lg outline-none border-2 border-orange-300 resize-none"
               placeholder="Tap a button in the right panel for feedback"
               disabled
+              v-model="feedback"
+              style="overflow-y: scroll;"
             ></textarea>
           </div>
         </div>
@@ -113,6 +114,7 @@
             <h2 class="font-medium text-center py-1">Inspire</h2>
             <button
               class="bg-transparent border border-teal-500 text-teal-500 font-semibold py-1 px-2 my-1 mx-2 rounded hover:bg-teal-500 hover:text-white hover:border-transparent"
+              @click="checkSimilarApps"
             >
               Similar Apps
             </button>
@@ -192,7 +194,7 @@
 
     <!-- Vue -->
     <script>
-        const app = Vue.createApp({
+      const app = Vue.createApp({
         data() {
           return {
             userDoc: "",
@@ -202,8 +204,93 @@
             openAIKey: "",
           };
         },
+        methods: {
+          // check if the doc is valid: 100-2000 words
+          checkValidDoc() {
+            const doc = this.userDoc.trim();
+            const wordCount = doc.split(/\s+/).length;
+            if (wordCount > 2000 || wordCount < 100) {
+              return false;
+            }
+            return true;
+          },
+
+          // check if the OpenAI API key is valid
+          isValidOpenaiKey() {
+            let OPENAI_API_KEY = this.openAIKey.trim();
+            // An OpenAI API key should be exactly 34 characters long
+            if (openAIKey.length !== 34) {
+              return false;
+            }
+
+            // An OpenAI API key should start with "sk-"
+            if (!openAIKey.startsWith("sk-")) {
+              return false;
+            }
+
+            // An OpenAI API key should only contain hexadecimal characters (0-9,a-f)
+            const hexRegex = /^[0-9a-fA-F]+$/;
+            if (!hexRegex.test(openAIKey.slice(3))) {
+              return false;
+            }
+
+            return true;
+          },
+
+          checkSimilarApps() {
+            const doc = this.userDoc.trim();
+
+            console.log("Checking if document is valid...")
+            if (this.checkValidDoc()) {
+              // construct prompt
+              const similarAppsPrompt =
+                "Given the following product requirement document, show me the top 3 similar apps to the one described in the document? For each app, list the name, main features, strengths, weaknesses in bullet points. ---START OF DOCUMENT---" +
+                doc +
+                "---START OF DOCUMENT---";
+
+              // send request to OpenAI API
+              this.sendRequest(similarAppsPrompt);
+            } else {
+              this.feedback = "Invalid Document. Document must be between 100-2000 words.";
+            }
+          },
+
+          // send request to OpenAI API
+          sendRequest(requestPrompt) {
+            let _this = this
+            let OPENAI_API_KEY = this.openAIKey.trim();
+            console.log("Sending request to OpenAI API...");
+            _this.feedback("Sending request to OpenAI API...");
+
+            const url = "https://api.openai.com/v1/chat/completions";
+
+            const data = {
+              model: "gpt-3.5-turbo",
+              messages: [{ role: "user", content: requestPrompt }],
+              temperature: 0.3,
+            };
+
+            fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${OPENAI_API_KEY}`,
+              },
+              body: JSON.stringify(data),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                console.log(data.choices[0].message.content);
+                _this.feedback = data.choices[0].message.content;
+                console.log(_this.feedback);
+              })
+              .catch((error) => {
+                _this.feedback = JSON.stringify(error);
+              });
+          },
+        },
       });
-      
+
       app.mount("#app");
     </script>
   </body>
