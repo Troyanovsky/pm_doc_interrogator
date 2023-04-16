@@ -439,16 +439,21 @@
               body: JSON.stringify(data),
             })
               .then((response) => {
+                // Handle server errors
+                if (!response.ok) {
+                  throw new Error(response.statusText);
+                }
+
                 let reader = response.body.getReader();
                 let result = "";
                 let chunksReceived = [];
                 return reader.read().then(function processResult(resultObj) {
-                  console.log(resultObj.done);
+                  // console.log(resultObj.done);
                   if (resultObj.done) {
-                    console.log("Response fully streamed true");
+                    console.log("Response fully streamed: True");
                     // Response fully streamed
                     _this.feedback = result;
-                    console.log("true:" + _this.feedback);
+                    // console.log("Fully Streamed:" + _this.feedback);
                     return;
                   }
 
@@ -457,9 +462,11 @@
                   );
                   chunksReceived.push(chunkData);
 
+                  /*
                   console.log(resultObj);
                   console.log(resultObj.value);
                   console.log(chunkData);
+                  */
 
                   let jsonArr = chunkData.trim().split("\n");
 
@@ -467,7 +474,7 @@
                     let chunkMsg = "";
 
                     if (chunkData != "") {
-                      console.log("Chunk data not empty. Parsing JSON...");
+                      // console.log("Chunk data not empty. Parsing JSON...");
                       const startIndex = chunkData.indexOf("{"); // Find the start of the JSON object
                       const endIndex = chunkData.lastIndexOf("}") + 1; // Find the end of the JSON object
                       const jsonString = chunkData.substring(
@@ -475,6 +482,11 @@
                         endIndex
                       ); // Extract the substring containing only the JSON object
 
+                      if (jsonString == "") {
+                        console.log("No JSON object found in chunk data. Skipping...");
+                        return;
+                      }
+                      
                       const msgData = JSON.parse(jsonString);
 
                       chunkMsg =
@@ -483,7 +495,7 @@
                           : "";
                       result += chunkMsg;
                       _this.feedback = result; // Update _this.feedback with the new content
-                      console.log("Streaming: " + _this.feedback);
+                      // console.log("Streaming: " + _this.feedback);
                     } else {
                       chunkMsg = "";
                     }
@@ -494,6 +506,7 @@
               })
               .catch((error) => {
                 console.log("Error: " + error);
+                _this.feedback = "Error: " + error;
               });
           },
         },
