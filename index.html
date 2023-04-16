@@ -394,6 +394,10 @@
                 doc +
                 "---END OF DOCUMENT---";
 
+              // for debugging only
+              // debugPrompt = "Explain machine learning in two paragraphs.";
+              // this.sendRequest(debugPrompt);
+
               // send request to OpenAI API
               this.sendRequest(iterationPrompt);
             } else {
@@ -423,6 +427,7 @@
               model: "gpt-3.5-turbo",
               messages: [{ role: "user", content: requestPrompt }],
               temperature: 0.3,
+              stream: true,
             };
 
             fetch(url, {
@@ -433,12 +438,62 @@
               },
               body: JSON.stringify(data),
             })
-              .then((response) => response.json())
-              .then((data) => {
-                _this.feedback = data.choices[0].message.content;
+              .then((response) => {
+                let reader = response.body.getReader();
+                let result = "";
+                let chunksReceived = [];
+                return reader.read().then(function processResult(resultObj) {
+                  console.log(resultObj.done);
+                  if (resultObj.done) {
+                    console.log("Response fully streamed true");
+                    // Response fully streamed
+                    _this.feedback = result;
+                    console.log("true:" + _this.feedback);
+                    return;
+                  }
+
+                  let chunkData = new TextDecoder("utf-8").decode(
+                    resultObj.value
+                  );
+                  chunksReceived.push(chunkData);
+
+                  console.log(resultObj);
+                  console.log(resultObj.value);
+                  console.log(chunkData);
+
+                  let jsonArr = chunkData.trim().split("\n");
+
+                  jsonArr.forEach((chunkData) => {
+                    let chunkMsg = "";
+
+                    if (chunkData != "") {
+                      console.log("Chunk data not empty. Parsing JSON...");
+                      const startIndex = chunkData.indexOf("{"); // Find the start of the JSON object
+                      const endIndex = chunkData.lastIndexOf("}") + 1; // Find the end of the JSON object
+                      const jsonString = chunkData.substring(
+                        startIndex,
+                        endIndex
+                      ); // Extract the substring containing only the JSON object
+
+                      const msgData = JSON.parse(jsonString);
+
+                      chunkMsg =
+                        "content" in msgData.choices[0].delta
+                          ? msgData.choices[0].delta.content
+                          : "";
+                      result += chunkMsg;
+                      _this.feedback = result; // Update _this.feedback with the new content
+                      console.log("Streaming: " + _this.feedback);
+                    } else {
+                      chunkMsg = "";
+                    }
+                  });
+
+                  return reader.read().then(processResult);
+                });
               })
               .catch((error) => {
-                _this.feedback = JSON.stringify(error);
+                console.log("Error: " + error);
               });
           },
         },
